@@ -1,0 +1,425 @@
+.calendar-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1100px;
+  background-color: var(--surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-image-section {
+  flex: 1;
+  min-width: 350px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--surface-hover);
+}
+
+.calendar-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.calendar-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+  padding: 2.5rem 2rem;
+  color: var(--text-active);
+}
+
+.calendar-image-overlay h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-image-overlay p {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  font-weight: 300;
+}
+
+/* Spiral Binding UI */
+.spiral-binding {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 30px;
+  min-width: 30px;
+  background-color: transparent;
+  position: relative;
+  z-index: 10;
+  margin: 0 -15px; /* Pull panels together so they touch */
+}
+
+.spiral-ring {
+  width: 40px;
+  height: 12px;
+  background: linear-gradient(to bottom, #777, #ccc, #777);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+.spiral-ring::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--bg-color);
+  border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.spiral-ring::before {
+  content: '';
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--bg-color);
+  border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+}
+
+/* Calendar Body Layout */
+.calendar-right-panel {
+  flex: 2;
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 2.5rem;
+  background-color: var(--surface);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.calendar-month-year h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.calendar-nav-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.calendar-nav-buttons button {
+  padding: 0.75rem;
+  background-color: var(--surface-hover);
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-buttons button:hover {
+  background-color: var(--primary);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.day-name {
+  text-align: center;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 1rem;
+}
+
+.day-cell-wrapper {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.day-cell {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.day-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  z-index: 3;
+}
+
+.day-cell:not(.empty-cell):not(.selected-range):not(.start-date):not(.end-date):hover .day-content {
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+/* Date Selection Styles */
+.start-date {
+  color: white;
+}
+.start-date .day-content {
+  background-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.end-date {
+  color: white;
+}
+.end-date .day-content {
+  background-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.selected-range {
+  position: relative;
+}
+
+.selected-range::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  height: 80%;
+  background-color: rgba(99, 102, 241, 0.15);
+  z-index: 1;
+}
+
+.selected-range.start-date::before {
+  left: 50%;
+  width: 50%;
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
+}
+
+.selected-range.end-date::before {
+  right: 50%;
+  width: 50%;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+}
+
+.selected-range:not(.start-date):not(.end-date)::before {
+  left: 0;
+  width: 100%;
+}
+
+.selected-range:not(.start-date):not(.end-date) .day-content {
+  color: #c7d2fe; /* light indigo */
+  font-weight: 500;
+}
+
+/* Current Day Highlight */
+.is-today .day-content {
+  box-shadow: inset 0 0 0 2px var(--red-accent);
+}
+
+.empty-cell {
+  cursor: default;
+  opacity: 0;
+}
+
+/* Notes Section */
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: border-color 0.3s ease;
+}
+
+.notes-container:focus-within {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.notes-header svg {
+  margin-right: 0.5rem;
+}
+
+textarea.notes-input {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  resize: none;
+  color: var(--text-active);
+  font-size: 1rem;
+  line-height: 1.5;
+  outline: none;
+  min-height: 100px;
+}
+
+textarea.notes-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive constraints */
+@media (max-width: 900px) {
+  .calendar-container {
+    flex-direction: column;
+  }
+
+  .calendar-image-section {
+    min-height: 250px;
+    max-height: 250px;
+    width: 100%;
+  }
+
+  /* Flip Binding to Horizontal on Mobile */
+  .spiral-binding {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    min-height: 30px;
+    margin: -15px 0; /* Pull vertical panels together */
+  }
+  
+  .spiral-ring {
+    width: 12px;
+    height: 40px;
+    background: linear-gradient(to right, #777, #ccc, #777);
+  }
+
+  .spiral-ring::after {
+    top: 2px;
+    left: 2px;
+  }
+
+  .spiral-ring::before {
+    bottom: 2px;
+    top: auto;
+    left: 2px;
+    right: auto;
+  }
+
+  .calendar-right-panel {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .calendar-image-section {
+    height: 180px;
+    min-height: 180px;
+  }
+
+  .calendar-image-overlay {
+    padding: 1.5rem 1rem;
+  }
+  
+  .calendar-image-overlay h2 {
+    font-size: 1.5rem;
+  }
+  
+  .calendar-image-overlay p {
+    font-size: 0.9rem;
+  }
+
+  .calendar-right-panel {
+    padding: 1rem 1rem 2rem 1rem;
+  }
+
+  .calendar-month-year h3 {
+    font-size: 1.2rem;
+  }
+
+  .calendar-nav-buttons button {
+    padding: 0.5rem;
+    margin-left: 0.25rem;
+  }
+
+  .calendar-grid {
+    gap: 0.1rem;
+  }
+
+  .day-name {
+    font-size: 0.65rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .day-cell {
+    font-size: 0.8rem;
+  }
+
+  .day-content {
+    width: 90%;
+    height: 90%;
+  }
+
+  .notes-container {
+    padding: 1rem;
+  }
+
+  textarea.notes-input {
+    font-size: 0.9rem;
+    min-height: 80px;
+  }
+}
