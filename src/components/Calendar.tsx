@@ -25,20 +25,38 @@ export const Calendar: React.FC<CalendarProps> = () => {
   const [startDate, setStartDate] = React.useState<Date | null>(null);
   const [endDate, setEndDate] = React.useState<Date | null>(null);
   const [hoverDate, setHoverDate] = React.useState<Date | null>(null);
-  const [notes, setNotes] = React.useState<string>("");
 
-  // Load notes from local storage on mount
-  React.useEffect(() => {
-    const savedNotes = localStorage.getItem('calendar_notes');
-    if (savedNotes) {
-      setNotes(savedNotes);
+  const [notesRecord, setNotesRecord] = React.useState<Record<string, string>>(() => {
+    const allNotes = localStorage.getItem('calendar_all_notes');
+    if (allNotes) {
+      try {
+        return JSON.parse(allNotes);
+      } catch (e) {
+        return {};
+      }
     }
-  }, []);
+    
+    // Migration from old single-note system
+    const oldNotes = localStorage.getItem('calendar_notes');
+    if (oldNotes) {
+       const initialRecord = { [format(new Date(), 'yyyy_MM')]: oldNotes };
+       localStorage.setItem('calendar_all_notes', JSON.stringify(initialRecord));
+       // Optional: Clean up old notes
+       // localStorage.removeItem('calendar_notes');
+       return initialRecord;
+    }
+    return {};
+  });
 
-  // Save notes to local storage automatically
-  React.useEffect(() => {
-    localStorage.setItem('calendar_notes', notes);
-  }, [notes]);
+  const monthKey = format(currentDate, 'yyyy_MM');
+  const notes = notesRecord[monthKey] || "";
+
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newNotes = e.target.value;
+    const newRecord = { ...notesRecord, [monthKey]: newNotes };
+    setNotesRecord(newRecord);
+    localStorage.setItem('calendar_all_notes', JSON.stringify(newRecord));
+  };
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
@@ -199,7 +217,7 @@ export const Calendar: React.FC<CalendarProps> = () => {
             className="notes-input"
             placeholder="Jot down important notes for this month..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={handleNotesChange}
           />
         </div>
       </div>
